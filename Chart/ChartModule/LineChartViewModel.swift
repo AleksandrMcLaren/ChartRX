@@ -35,16 +35,12 @@ class LineChartViewModel: LineChartViewModelPresentable {
 
     // MARK: - LineChartViewModelPresentable
 
-    var dropListTitles: BehaviorRelay<[String]> = BehaviorRelay.init(value: [])
-    var bottomButtonTitles: BehaviorRelay<[String]> = BehaviorRelay.init(value: [])
-    var bottomButtonsIndex: BehaviorRelay<Int> = BehaviorRelay.init(value: 0)
-    var xAxisTitles: BehaviorRelay<[String]> = BehaviorRelay.init(value: [])
-    var chartData: BehaviorRelay<[CGFloat]> = BehaviorRelay.init(value: [])
-    var isLoading: BehaviorRelay<Bool> = BehaviorRelay.init(value: false)
-
-    public var updateXAxisTitles: (([String]) -> Void)?
-    public var updateData: (([CGFloat]) -> Void)?
-    public var refreshData: ((Bool) -> Void)?
+    public var dropListTitles: BehaviorRelay<[String]> = BehaviorRelay.init(value: [])
+    public var bottomButtonTitles: BehaviorRelay<[String]> = BehaviorRelay.init(value: [])
+    public var bottomButtonsIndex: BehaviorRelay<Int> = BehaviorRelay.init(value: 0)
+    public var xAxisTitles: BehaviorRelay<[String]> = BehaviorRelay.init(value: [])
+    public var chartData: BehaviorRelay<[CGFloat]> = BehaviorRelay.init(value: [])
+    public var isLoading: BehaviorRelay<Bool> = BehaviorRelay.init(value: false)
 
     public func fetchData(isin: String) {
         /// симулируем запрос данных
