@@ -83,7 +83,7 @@ class LineChartViewModel: LineChartViewModelPresentable {
 
 extension LineChartViewModel {
 
-    func downloadData(isin: String, completion: (() -> Void)?) {
+    fileprivate func downloadData(isin: String, completion: (() -> Void)?) {
         let parseQueue = DispatchQueue(label: "LineChartViewModel.downloadData")
         parseQueue.async {
             /// создадим данные кнопок
