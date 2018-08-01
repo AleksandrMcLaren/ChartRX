@@ -18,7 +18,7 @@ protocol DropListPresentable {
     /// Сообщит о выбранной строке.
     var selectedRow: ((_ row: Int) -> Void)? { get set }
     /** Максимальная высота открытого списка, чтобы не выйти за границы экрана.
-        Если контент открытой таблицы больше maxHeight, включится скролл таблицы. */
+     Если контент открытой таблицы больше maxHeight, включится скролл таблицы. */
     var maxHeight: CGFloat? { get set }
     /// Задает массив строк списка.
     var dataSource: [String]? { get set }
@@ -96,7 +96,7 @@ class DropListViewController: UIViewController, DropListPresentable {
         if self.viewHeight.min == 0 {
             /// при первом фрейме обновим высоты
             self.viewHeight.min = self.view.bounds.height
-            self.viewHeight.max = CGFloat(source.count) * self.viewHeight.min
+            self.viewHeight.max = CGFloat(self.source.count) * self.viewHeight.min
             /// обновим ограничения
             self.heightShadowConstraint.constant = self.viewHeight.min
             self.heightTableConstraint.constant = self.viewHeight.min
@@ -138,60 +138,65 @@ class DropListViewController: UIViewController, DropListPresentable {
 
     /// Открывает список.
     fileprivate func dropList() {
-        if let paths = dropRowPaths() {
-            self.isDrop = true
-
-            var needsScroll = false
-            var maxViewHeight = self.viewHeight.max
-            if let maxHeight = self.maxHeight, maxViewHeight > maxHeight {
-                maxViewHeight = maxHeight
-                needsScroll = true
-            }
-
-            self.heightShadowConstraint.constant = maxViewHeight
-            self.heightTableConstraint.constant = maxViewHeight
-            UIView.animate(withDuration: 0.3, animations: {
-                self.view.frame.size = CGSize(width: self.view.frame.width, height: maxViewHeight)
-                self.view.layoutIfNeeded()
-            }) { (finished) in
-                self.tableView.isScrollEnabled = needsScroll
-            }
-
-            self.tableView.beginUpdates()
-            self.tableView.insertRows(at: paths, with: .automatic)
-            self.tableView.endUpdates()
+        guard let paths = dropRowPaths() else {
+            return
         }
+
+        self.isDrop = true
+
+        var needsScroll = false
+        var maxViewHeight = self.viewHeight.max
+        if let maxHeight = self.maxHeight, maxViewHeight > maxHeight {
+            maxViewHeight = maxHeight
+            needsScroll = true
+        }
+
+        self.heightShadowConstraint.constant = maxViewHeight
+        self.heightTableConstraint.constant = maxViewHeight
+        UIView.animate(withDuration: 0.3, animations: {
+            self.view.frame.size = CGSize(width: self.view.frame.width, height: maxViewHeight)
+            self.view.layoutIfNeeded()
+        }) { (finished) in
+            self.tableView.isScrollEnabled = needsScroll
+        }
+
+        self.tableView.beginUpdates()
+        self.tableView.insertRows(at: paths, with: .automatic)
+        self.tableView.endUpdates()
     }
 
     /// Закрывает список.
     fileprivate func hideList() {
-        if let paths = dropRowPaths() {
-            self.isDrop = false
+        guard let paths = dropRowPaths() else {
+            return
+        }
 
-            self.tableView.beginUpdates()
-            self.tableView.deleteRows(at: paths, with: .automatic)
-            self.tableView.endUpdates()
+        self.isDrop = false
 
-            self.heightShadowConstraint.constant = self.viewHeight.min
-            self.heightTableConstraint.constant = self.viewHeight.min
-            UIView.animate(withDuration: 0.3, animations: {
-                self.view.frame.size = CGSize(width: self.view.frame.width, height: self.viewHeight.min)
-                self.view.layoutIfNeeded()
-            }) { (finished) in
-                self.tableView.isScrollEnabled = false
-            }
+        self.tableView.beginUpdates()
+        self.tableView.deleteRows(at: paths, with: .automatic)
+        self.tableView.endUpdates()
+
+        self.heightShadowConstraint.constant = self.viewHeight.min
+        self.heightTableConstraint.constant = self.viewHeight.min
+        UIView.animate(withDuration: 0.3, animations: {
+            self.view.frame.size = CGSize(width: self.view.frame.width, height: self.viewHeight.min)
+            self.view.layoutIfNeeded()
+        }) { (finished) in
+            self.tableView.isScrollEnabled = false
         }
     }
 
     /** Возвращает массив IndexPath с первого индекса.
-        т.е. тех которые участвуют в анимации открытия/закрытия. */
+     т.е. тех которые участвуют в анимации открытия/закрытия. */
     fileprivate func dropRowPaths() -> [IndexPath]? {
-        var paths = [IndexPath]()
-        if !self.source.isEmpty {
-            let end = self.source.count
-            for i in 1..<end {
+        var paths: [IndexPath]?
+        let count = self.source.count
+        if count > 1 {
+            paths = [IndexPath]()
+            for i in 1..<count {
                 let path = IndexPath(row: i, section: 0)
-                paths.append(path)
+                paths!.append(path)
             }
         }
         return paths
@@ -225,8 +230,8 @@ class DropListViewController: UIViewController, DropListPresentable {
     }
 
     /** Перемещает строку с index в нулевой индекс dataSource,
-        остальные элементы остаются по своей сортировке,
-        обновляет таблицу. */
+     остальные элементы остаются по своей сортировке,
+     обновляет таблицу. */
     fileprivate func moveToFirstRowIndex(_ index: Int) {
         if index < self.source.count {
             self.tableView.beginUpdates()
