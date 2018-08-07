@@ -266,7 +266,7 @@ extension DropListViewController: UITableViewDelegate {
 
 extension Array {
 
-    /// Возвращает массив IndexPath или nil после заданного индекса.
+    /// Возвращает массив IndexPath после заданного индекса.
     func indexPaths(after i: Int, section: Int) -> [IndexPath]? {
         guard i < self.endIndex else {
             return nil
