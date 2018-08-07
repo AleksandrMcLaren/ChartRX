@@ -187,16 +187,7 @@ class DropListViewController: UIViewController, DropListPresentable {
     /** Возвращает массив IndexPath с первого индекса.
      т.е. тех которые участвуют в анимации открытия/закрытия. */
     fileprivate func dropRowPaths() -> [IndexPath]? {
-        var paths: [IndexPath]?
-        let count = self.tableSource.count
-        if count > 1 {
-            paths = [IndexPath]()
-            for i in 1..<count {
-                let path = IndexPath(row: i, section: 0)
-                paths!.append(path)
-            }
-        }
-        return paths
+        return self.tableSource.indexPaths(after: 0, section: 0)
     }
 
     fileprivate func selected(row: Int) {
@@ -270,5 +261,25 @@ extension DropListViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         selected(row: indexPath.row)
+    }
+}
+
+extension Array {
+
+    /// Возвращает массив IndexPath или nil после заданного индекса.
+    func indexPaths(after i: Int, section: Int) -> [IndexPath]? {
+        guard i < self.endIndex else {
+            return nil
+        }
+
+        var paths = [IndexPath]()
+        var idx = self.index(after: i)
+        while idx != self.endIndex {
+            let path = IndexPath(row: idx, section: section)
+            paths.append(path)
+            self.formIndex(after: &idx)
+        }
+
+        return paths
     }
 }
